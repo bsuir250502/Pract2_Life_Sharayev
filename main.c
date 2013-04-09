@@ -11,7 +11,7 @@ int main() {
   size_x = strtol(input_buffer, &endptr, 10);
   fgets(input_buffer, strlen(input_buffer), fp);
   size_y = strtol(input_buffer, &endptr, 10);
-  map = (int *)malloc(size_x * size_y * 2 * sizeof(int));
+  map = (int *)malloc(size_x * size_y * sizeof(int));
 
 
   fclose(fp);
