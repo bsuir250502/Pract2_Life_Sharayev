@@ -1,11 +1,20 @@
-#include <stdafx.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-int* filling_map(int *, int *, int *);
+typedef struct {
+  int present;
+  int next;
+} map_t;
+
+
+
+map_t* filling_map(int *, int *);
 
 int main() {
-  int i, j, size_x = 0, size_y = 0, *map;
-  map = filling_map(map, &size_x, &size_y);
+  int size_x = 0, size_y = 0;
+  map_t *map;
+  map = filling_map(&size_x, &size_y);
   
 
 
@@ -13,18 +22,24 @@ int main() {
   return 0;
 }
 
-int* filling_map(int *map, int* size_x, int* size_y) {
+map_t* filling_map(int* size_x, int* size_y) {
   int i, j;
   char input_buffer[128], *endptr;
+  map_t *map;
   FILE *fp = fopen("input.in", "r");
+
   fgets(input_buffer, strlen(input_buffer), fp);
   *size_x = strtol(input_buffer, &endptr, 10);
   fgets(input_buffer, strlen(input_buffer), fp);
   *size_y = strtol(input_buffer, &endptr, 10);
-  map = (int *) malloc(*size_x * *size_y * sizeof(int));
+  map = (map_t *) malloc((*size_x) * (*size_y) * sizeof(map));
+  if(!map) {
+    printf("Memory isn't allocated");
+    exir(1);
+  }
   for(i = 0; i < *size_y; i++) {
     for(j = 0; j < *size_x; j++) {
-      map[i][j]getc(fp)-48;
+      map[i][j].present = getc(fp)-'0';
     }
     getc(fp);
   }
