@@ -23,15 +23,11 @@ int main()
     int i, gen_num = 0;
     map_t **map;
     map = filling_map(&gen_num);
-    for(i = 0; i < gen_num; i++) {
-        
+    for (i = 0; i < gen_num; i++) {
+        change_generation(map);
     }
     display_map(map);
     free_memory(map, SIZE_Y);
-    if (!map) {
-        printf("Memory free\n");
-        exit(1);
-    }
     return 0;
 }
 
@@ -45,14 +41,15 @@ map_t **filling_map(int *gen_num)
     fgets(input_buffer, SIZE(input_buffer), fp);
     *gen_num = strtol(input_buffer, NULL, 10);
 
-    printf("sizeX = %d, sizeY = %d, generation number = %d\n", SIZE_X, SIZE_Y, *gen_num);
+    printf("sizeX = %d, sizeY = %d, generation number = %d\n", SIZE_X,
+           SIZE_Y, *gen_num);
 
-    if (!(map = (map_t **) calloc(SIZE_Y, sizeof(**map)) )) {
+    if (!(map = (map_t **) calloc(SIZE_Y, sizeof(**map)))) {
         printf("Memory isn't allocated at the first calloc\n");
         exit(1);
     }
-    for(i = 0; i < SIZE_Y; i++) { 
-        if (!(map[i] = (map_t *) calloc(SIZE_X, sizeof(*map)) )) {
+    for (i = 0; i < SIZE_Y; i++) {
+        if (!(map[i] = (map_t *) calloc(SIZE_X, sizeof(*map)))) {
             printf("Memory isn't allocated\n");
             exit(1);
         }
@@ -68,17 +65,17 @@ map_t **filling_map(int *gen_num)
     return map;
 }
 
-int free_memory(map_t **array, int size)
+int free_memory(map_t ** array, int size)
 {
     int i;
-    for(i = 0; i < size; i++) {
+    for (i = 0; i < size; i++) {
         free(array[i]);
     }
     free(array);
     return 0;
 }
 
-int display_map(map_t **map)
+int display_map(map_t ** map)
 {
     int i, j;
     for (i = 0; i < SIZE_Y; i++) {
@@ -91,12 +88,12 @@ int display_map(map_t **map)
     return 0;
 }
 
-int change_generation(map_t **map)
+int change_generation(map_t ** map)
 {
     int i, j;
 
-    for(i = 0; i < SIZE_Y; i++) {
-        for(j = 0; j < SIZE_X; j++) {
+    for (i = 0; i < SIZE_Y; i++) {
+        for (j = 0; j < SIZE_X; j++) {
             map[i][j].next = check_cell(map, i, j);
         }
     }
@@ -105,20 +102,48 @@ int change_generation(map_t **map)
     return 0;
 }
 
-int check_cell(map_t **map, int i, int j)
+int check_cell(map_t ** map, int i, int j)
 {
-    int amount;
+    int left, right, top, bottom, amount;
+    switch (i) {
+    case 0:
+        top = SIZE_Y;
+        bottom = 1;
+    case SIZE_Y:
+        top = SIZE_Y - 1;
+        bottom = 0;
+    }
+    switch (j) {
+    case 0:
+        left = SIZE_X;
+        right = 1;
+    case SIZE_X:
+        left = SIZE_X - 1;
+        right = 0;
+    }
+
+    amount =
+        map[top][left].present + map[top][j].present +
+        map[top][right].present + map[i][left].present +
+        map[i][right].present + map[bottom][left].present +
+        map[bottom][j].present + map[bottom][right].present;
+    if (!map[i][j].present && amount == 3) {
+        return 1;
+    } else {
+        if (amount > 3 || amount < 2) {
+            return 0;
+        }
+    }
 
 
-
-    return 0;
+    return 1;
 }
 
-int copy_map(map_t **map) 
+int copy_map(map_t ** map)
 {
     int i, j;
-    for(i = 0; i < SIZE_Y; i++) {
-        for(j = 0; j < SIZE_X; j++) {
+    for (i = 0; i < SIZE_Y; i++) {
+        for (j = 0; j < SIZE_X; j++) {
             map[i][j].present = map[i][j].next;
         }
     }
