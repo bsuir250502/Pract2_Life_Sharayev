@@ -104,20 +104,21 @@ int change_generation(map_t ** map)
 
 int check_cell(map_t ** map, int i, int j)
 {
-    int left, right, top, bottom, amount;
-    switch (i) {
-    case 0:
+    int left = j - 1, right = j + 1, top = i - 1, bottom = i + 1, amount;
+    if(i == 0) {
         top = SIZE_Y;
         bottom = 1;
-    case SIZE_Y:
+    }
+    else if(i == SIZE_Y) {
         top = SIZE_Y - 1;
         bottom = 0;
     }
-    switch (j) {
-    case 0:
+
+   if(j == 0) {
         left = SIZE_X;
         right = 1;
-    case SIZE_X:
+    }
+    else if (j == SIZE_X) {
         left = SIZE_X - 1;
         right = 0;
     }
