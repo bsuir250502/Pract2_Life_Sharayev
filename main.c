@@ -11,7 +11,12 @@ typedef struct {
     int next;
 } map_t;
 
-map_t **filling_map(int *);
+typedef struct {
+    int x;
+    int y;
+} msize_t;
+
+map_t **filling_map(int *, msize_t *);
 int free_memory(map_t **, int);
 int display_map(map_t **);
 int change_generation(map_t **);
@@ -22,7 +27,8 @@ int main()
 {
     int i, gen_num = 0;
     map_t **map;
-    map = filling_map(&gen_num);
+    msize_t size;
+    map = filling_map(&gen_num, &size);
     for (i = 0; i < gen_num; i++) {
         change_generation(map);
     }
@@ -31,7 +37,7 @@ int main()
     return 0;
 }
 
-map_t **filling_map(int *gen_num)
+map_t **filling_map(int *gen_num, msize_t *size)
 {
     int i, j;
     char input_buffer[128];
@@ -39,10 +45,14 @@ map_t **filling_map(int *gen_num)
     FILE *fp = fopen("input.in", "r");
 
     fgets(input_buffer, SIZE(input_buffer), fp);
+    size->x = strtol(input_buffer, NULL, 10);
+    fgets(input_buffer, SIZE(input_buffer), fp);
+    size->y = strtol(input_buffer, NULL, 10);
+    fgets(input_buffer, SIZE(input_buffer), fp);
     *gen_num = strtol(input_buffer, NULL, 10);
 
-    printf("sizeX = %d, sizeY = %d, generation number = %d\n", SIZE_X,
-           SIZE_Y, *gen_num);
+    printf("sizeX = %d, sizeY = %d, generation number = %d\n", size->x,
+           size->y, *gen_num);
 
     if (!(map = (map_t **) calloc(SIZE_Y, sizeof(**map)))) {
         printf("Memory isn't allocated at the first calloc\n");
