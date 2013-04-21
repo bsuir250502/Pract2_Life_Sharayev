@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define SIZE_X 16
-#define SIZE_Y 16
 #define SIZE( x ) (sizeof(x)/sizeof(*x))
 
 typedef struct {
@@ -17,11 +15,11 @@ typedef struct {
 } msize_t;
 
 map_t **filling_map(int *, msize_t *);
-int free_memory(map_t **, int);
-int display_map(map_t **);
-int change_generation(map_t **);
-int check_cell(map_t **, int, int);
-int copy_map(map_t **);
+int free_memory(map_t **, msize_t);
+int display_map(map_t **, msize_t);
+int change_generation(map_t **, msize_t);
+int check_cell(map_t **,msize_t, int, int);
+int copy_map(map_t **, msize_t);
 
 int main()
 {
@@ -29,11 +27,12 @@ int main()
     map_t **map;
     msize_t size;
     map = filling_map(&gen_num, &size);
+    display_map(map, size);
     for (i = 0; i < gen_num; i++) {
-        change_generation(map);
+        change_generation(map, size);
     }
-    display_map(map);
-    free_memory(map, SIZE_Y);
+    display_map(map, size);
+    free_memory(map, size);
     return 0;
 }
 
@@ -75,21 +74,21 @@ map_t **filling_map(int *gen_num, msize_t *size)
     return map;
 }
 
-int free_memory(map_t ** array, int size)
+int free_memory(map_t ** array, msize_t size)
 {
     int i;
-    for (i = 0; i < size; i++) {
+    for (i = 0; i < size.y; i++) {
         free(array[i]);
     }
     free(array);
     return 0;
 }
 
-int display_map(map_t ** map)
+int display_map(map_t ** map, msize_t size)
 {
     int i, j;
-    for (i = 0; i < SIZE_Y; i++) {
-        for (j = 0; j < SIZE_X; j++) {
+    for (i = 0; i < size.y; i++) {
+        for (j = 0; j < size.x; j++) {
             printf("%d", map[i][j].present);
         }
         puts("");
@@ -98,38 +97,38 @@ int display_map(map_t ** map)
     return 0;
 }
 
-int change_generation(map_t ** map)
+int change_generation(map_t ** map, msize_t size)
 {
     int i, j;
 
-    for (i = 0; i < SIZE_Y; i++) {
-        for (j = 0; j < SIZE_X; j++) {
-            map[i][j].next = check_cell(map, i, j);
+    for (i = 0; i < size.y; i++) {
+        for (j = 0; j < size.x; j++) {
+            map[i][j].next = check_cell(map, size, i, j);
         }
     }
 
-    copy_map(map);
+    copy_map(map, size);
     return 0;
 }
 
-int check_cell(map_t ** map, int i, int j)
+int check_cell(map_t ** map, msize_t size, int i, int j)
 {
     int left = j - 1, right = j + 1, top = i - 1, bottom = i + 1, amount;
     if(i == 0) {
-        top = SIZE_Y;
+        top = size.y;
         bottom = 1;
     }
-    else if(i == SIZE_Y) {
-        top = SIZE_Y - 1;
+    else if(i == size.y) {
+        top = size.y - 1;
         bottom = 0;
     }
 
    if(j == 0) {
-        left = SIZE_X;
+        left = size.x;
         right = 1;
     }
-    else if (j == SIZE_X) {
-        left = SIZE_X - 1;
+    else if (j == size.x) {
+        left = size.x - 1;
         right = 0;
     }
 
@@ -150,11 +149,11 @@ int check_cell(map_t ** map, int i, int j)
     return 1;
 }
 
-int copy_map(map_t ** map)
+int copy_map(map_t ** map, msize_t size)
 {
     int i, j;
-    for (i = 0; i < SIZE_Y; i++) {
-        for (j = 0; j < SIZE_X; j++) {
+    for (i = 0; i < size.y; i++) {
+        for (j = 0; j < size.x; j++) {
             map[i][j].present = map[i][j].next;
         }
     }
