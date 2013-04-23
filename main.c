@@ -21,6 +21,7 @@ int change_generation(map_t **, msize_t);
 int check_cell(map_t **,msize_t, int, int);
 int copy_map(map_t **, msize_t);
 
+
 int main()
 {
     int i, gen_num = 0;
@@ -53,19 +54,22 @@ map_t **filling_map(int *gen_num, msize_t *size)
     printf("sizeX = %d, sizeY = %d, generation number = %d\n", size->x,
            size->y, *gen_num);
 
-    if (!(map = (map_t **) calloc(SIZE_Y, sizeof(**map)))) {
+    if (!(map = (map_t **) calloc(size->y, sizeof(**map)))) {
         printf("Memory isn't allocated at the first calloc\n");
         exit(1);
     }
-    for (i = 0; i < SIZE_Y; i++) {
-        if (!(map[i] = (map_t *) calloc(SIZE_X, sizeof(*map)))) {
+    for (i = 0; i < size->y; i++) {
+        if (!(map[i] = (map_t *) calloc(size->x, sizeof(*map)))) {
             printf("Memory isn't allocated\n");
             exit(1);
         }
     }
-    for (i = 0; i < SIZE_Y; i++) {
-        for (j = 0; j < SIZE_X; j++) {
+    for (i = 0; i < size->y; i++) {
+        for (j = 0; j < size->x; j++) {
             map[i][j].present = getc(fp) - '0';
+            if(map[i][j].present != 0 && map[i][j].present != 1) {
+                printf("Error. Wrong input file at %d line, %d position.\n", i, j);
+            }
         }
         getc(fp);
     }
