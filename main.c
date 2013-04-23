@@ -69,6 +69,7 @@ map_t **filling_map(int *gen_num, msize_t *size)
             map[i][j].present = getc(fp) - '0';
             if(map[i][j].present != 0 && map[i][j].present != 1) {
                 printf("Error. Wrong input file at %d line, %d position.\n", i, j);
+                exit(1);
             }
         }
         getc(fp);
@@ -93,10 +94,11 @@ int display_map(map_t ** map, msize_t size)
     int i, j;
     for (i = 0; i < size.y; i++) {
         for (j = 0; j < size.x; j++) {
-            printf("%d", map[i][j].present);
+            printf("%d", map[i][j].next);
         }
         puts("");
     }
+    puts("");
 
     return 0;
 }
@@ -104,20 +106,24 @@ int display_map(map_t ** map, msize_t size)
 int change_generation(map_t ** map, msize_t size)
 {
     int i, j;
-
+    
     for (i = 0; i < size.y; i++) {
         for (j = 0; j < size.x; j++) {
             map[i][j].next = check_cell(map, size, i, j);
         }
     }
 
-    copy_map(map, size);
+    //copy_map(map, size);
     return 0;
 }
 
 int check_cell(map_t ** map, msize_t size, int i, int j)
 {
-    int left = j - 1, right = j + 1, top = i - 1, bottom = i + 1, amount;
+    int left = j - 1, right = j + 1, top = i - 1, bottom = i + 1, amount = 0;
+    //printf("Hurray");
+    //printf("%d;%d;%d;%d;\n\n", size.x, size.y, i, j);
+    printf("Map in check cell\n");
+    display_map(map, size);
     if(i == 0) {
         top = size.y;
         bottom = 1;
@@ -135,20 +141,34 @@ int check_cell(map_t ** map, msize_t size, int i, int j)
         left = size.x - 1;
         right = 0;
     }
+    printf("%d\n", left);
+    printf("%d\n", right);
+    printf("%d\n", top);
+    printf("%d\n", bottom);
+
+    printf("%d\n", amount);
+
+    printf("%d\n", map[top][left].present );
+    printf("%d\n", map[top][j].present);
+    printf("%d\n", map[top][right].present);    
+    printf("%d\n", map[i][left].present);
+    printf("%d\n", map[i][right].present);
+    printf("%d\n",  map[bottom][left].present );
+    printf("%d\n",  map[bottom][j].present);
+    printf("%d\n", map[bottom][right].present);
 
     amount =
         map[top][left].present + map[top][j].present +
         map[top][right].present + map[i][left].present +
         map[i][right].present + map[bottom][left].present +
         map[bottom][j].present + map[bottom][right].present;
+    printf("%d\n", amount);
     if (!map[i][j].present && amount == 3) {
         return 1;
-    } else {
-        if (amount > 3 || amount < 2) {
-            return 0;
-        }
+    } else if (amount > 3 || amount < 2) {
+        return 0;
     }
-
+    
 
     return 1;
 }
